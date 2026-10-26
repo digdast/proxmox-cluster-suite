@@ -1,6 +1,6 @@
 # ⚡ Proxmox VE 5-Node Enterprise Cluster Suite
 
-Comprehensive optimization, high-availability tuning, automated backup, and monitoring suite tailored for the **5-Node Proxmox VE Cluster** (`pve-00` to `pve-04` at `192.168.0.30 - 192.168.0.34`) and network storage (`192.168.0.3` unRAID / NAS).
+Comprehensive optimization, high-availability tuning, automated backup, and orchestration suite tailored for the **5-Node Proxmox VE Cluster** (`pve-00` to `pve-04` at `192.168.0.30 - 192.168.0.34`) and network storage (`192.168.0.3` unRAID / NAS).
 
 ---
 
@@ -20,59 +20,39 @@ Comprehensive optimization, high-availability tuning, automated backup, and moni
 ## 🚀 Key Modules Included
 
 ### 1. Production Performance Tuning (`optimize_node.sh`)
-- **No-Subscription Repositories**: Disables invalid enterprise repos and enables `pve-no-subscription` so `apt update` works seamlessly.
-- **Nag Popup Removal**: Patches `proxmoxlib.js` to eliminate the *"No Valid Subscription"* popup. Includes a permanent APT post-invoke hook in `/etc/apt/apt.conf.d/` so the patch survives updates.
-- **CPU Governor**: Sets CPU governor to `performance` across all cores via persistent systemd service, preventing hypervisor micro-stutters.
-- **Kernel Sysctl**:
-  - `vm.swappiness = 10`: Keeps VM memory cached in RAM instead of aggressive paging.
-  - `vm.dirty_ratio = 10` & `vm.dirty_background_ratio = 5`: Smoother write flush.
-  - `net.ipv4.ip_forward = 1`: Enabled for LXC and K3s bridge routing.
-- **ZFS ARC Cap**: Automatically caps ZFS ARC memory to 25% of node RAM to prevent hypervisor OOM kills on guest VMs.
+- **No-Subscription Repositories**: Disables enterprise repos and enables `pve-no-subscription`.
+- **Nag Popup Removal**: Patches `proxmoxlib.js` with permanent APT post-invoke hook.
+- **CPU Governor**: Sets CPU governor to `performance` across all cores via persistent systemd service.
+- **Kernel Sysctl**: `vm.swappiness = 10`, `vm.dirty_ratio = 10`, `net.ipv4.ip_forward = 1`.
+- **ZFS ARC Cap**: Automatically caps ZFS ARC memory to 25% of node RAM.
+- **Dedicated Memory**: Zero-ballooning optimization (`balloon: 0`) across all guest VMs for predictable bare-metal performance.
 
 ### 2. Shared Storage & Automated Backups (`setup_nfs_backups.sh`)
 - Auto-registers NFS share from `192.168.0.3` (`/mnt/user/data/backups`) across the cluster.
 - Configures automated daily `vzdump` snapshots with zstd compression at 3:00 AM.
 
-### 3. K3s Kubernetes on LXC (`k3s_lxc_setup.sh`)
-- Pre-provisions unprivileged nested LXC containers with `features: nesting=1,keyctl=1`.
-- Configures cgroups v2 and AppArmor delegation for smooth containerized workloads.
+### 3. K3s Kubernetes on LXC & VMs (`k3s_lxc_setup.sh`)
+- Pre-provisions unprivileged nested LXC containers and cloud-init VMs.
+- Configures cgroups v2, AppArmor delegation, and shared NFS volume mounts (`/data`).
 
-### 4. Interactive 1-Click Orchestrator (`orchestrator.py` & `run_suite.bat`)
-- Multi-threaded Python dispatcher using Paramiko.
-- Prompts for your root password or SSH key once, and applies tuning concurrently across all 5 nodes.
+### 4. Kubernetes HA Cluster & Workloads (`kubernetes/`)
+Automated provisioning, storage, DNS, and orchestration scripts for the 6-node K3s cluster:
+- `deploy_k8s_cluster.py`: Deploy 2 Control Planes & 4 Workers with embedded etcd HA.
+- `deploy_portainer_k8s.py`: Deploy Portainer CE connected to in-cluster Kubernetes API.
+- `configure_nfs_all_nodes.py`: Mount Unraid NFS storage (`/mnt/user/data`) across all nodes.
+- `add_ssh_keys_to_cluster.py`: Inject SSH keys into root and plexadmin across nodes.
+- `deploy_media_stack.py`: Deploy Sonarr, Radarr, and Prowlarr with persistent NFS storage.
+- `deploy_plex.py`: Deploy Plex Media Server with persistent library mounts.
+- `deploy_resume_cluster.py`: Deploy 4-replica zero-downtime resume website in namespace `web`.
+- `sync_resume_cluster_via_pve.py`: Stream and sync web bundle to cluster shared storage via PVE gateway.
+- `deploy_full_pihole_cluster.py`: Deploy 3-node Pi-hole v6 + Unbound + DoH cluster with Nebula-Sync.
+- `sync_pve_hosts_to_pihole.py`: Sync all 140 hypervisor, VM, and LXC local DNS records to Pi-hole v6.
+- `verify_pihole_cluster_dns.py`: Automated multi-node DNS resolution tester across cluster instances.
+- `deploy_npm_cert_renewal.py`: Automated 10-day Let's Encrypt wildcard SSL renewal via Cloudflare DNS-01 and systemd timers.
+- `expand_all_cluster_disks.py`: Live online disk expansion (+40GB) across all 6 nodes.
+- `expand_all_cluster_ram.py`: RAM expansion (+2GB to 6GB) with hotplug support.
+- `clean_and_test_keys.py`: Verify passwordless root SSH orchestration across the cluster.
 
-### 5. Cluster Web Dashboard (`web_dashboard.py` on port 7880)
-- Real-time status cards for all 5 nodes and storage target.
-- Live latency pinging and 1-click web console launcher.
-
----
-
-## 🛠️ Quick Start
-
-### Option A: 1-Click Interactive Dispatcher
-Double click:
-`C:\scripts\proxmox_orchestrator.bat`
-
-### Option B: Web Dashboard
-Double click:
-`C:\scripts\proxmox_dashboard.bat` (opens `http://localhost:7880`)
-
-### Option C: Manual Run on Any Node
-You can also copy and run `optimize_node.sh` directly on any node:
-```bash
-scp C:\scripts\proxmox_cluster_suite\optimize_node.sh root@192.168.0.30:/tmp/
-ssh root@192.168.0.30 "chmod +x /tmp/optimize_node.sh && /tmp/optimize_node.sh"
-```
-
-## Kubernetes HA Cluster & Workloads
-Automated provisioning, storage, and orchestration scripts for the 6-node K3s cluster:
-- `kubernetes/deploy_k8s_cluster.py`: Deploy 2 Control Planes & 4 Workers with embedded etcd HA.
-- `kubernetes/deploy_portainer_k8s.py`: Deploy Portainer CE connected to in-cluster Kubernetes API.
-- `kubernetes/configure_nfs_all_nodes.py`: Mount Unraid NFS storage (`/mnt/user/data`) across all nodes.
-- `kubernetes/add_ssh_keys_to_cluster.py`: Inject SSH keys into root and plexadmin on all nodes.
-- `kubernetes/deploy_media_stack.py`: Deploy Sonarr, Radarr, and Prowlarr with persistent NFS storage.
-- `kubernetes/deploy_plex.py`: Deploy Plex Media Server with persistent library mounts.
-- `kubernetes/deploy_full_pihole_cluster.py`: Deploy 3-node Pi-hole v6 + Unbound + DoH cluster with Nebula-Sync.
-- `kubernetes/expand_all_cluster_disks.py`: Live online disk expansion (+40GB) across all 6 nodes.
-- `kubernetes/expand_all_cluster_ram.py`: RAM expansion (+2GB to 6GB) with hotplug support.
-- `kubernetes/sync_local_dns_from_pihole01.py`: Copy and sync all 49 local DNS records from pihole-01.
+### 5. Interactive 1-Click Orchestrator & Web Dashboard
+- `orchestrator.py` & `run_suite.bat`: Multi-threaded Python dispatcher using Paramiko.
+- `web_dashboard.py` on port 7880: Real-time status cards, live pinging, and 1-click web console launcher.
