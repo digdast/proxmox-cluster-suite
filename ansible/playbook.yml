@@ -1,0 +1,95 @@
+---
+- name: Proxmox VE 5-Node Enterprise Cluster Optimization Suite
+  hosts: proxmox_cluster
+  gather_facts: true
+  tasks:
+
+    - name: 1. Display Target Node Information
+      debug:
+        msg: "Optimizing Node: {{ inventory_hostname }} ({{ ansible_host }}) - PVE Kernel {{ ansible_kernel }}"
+
+    - name: 2. Disable Proxmox Enterprise Repositories
+      lineinfile:
+        path: /etc/apt/sources.list.d/pve-enterprise.list
+        regexp: '^(deb\s+.*pve-enterprise.*)$'
+        line: '# \1'
+        backrefs: yes
+        state: present
+      ignore_errors: true
+
+    - name: 3. Add Proxmox VE No-Subscription Repository
+      apt_repository:
+        repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
+        state: present
+        filename: pve-no-subscription
+
+    - name: 4. Disable Proxmox Web GUI Subscription Nag Popup
+      replace:
+        path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+        regexp: 'res\.data\.status\.toLowerCase\(\) !== .active.'
+        replace: 'false'
+      notify: Restart pveproxy
+      ignore_errors: true
+
+    - name: 5. Install Persistent APT Post-Invoke Hook for Nag Removal
+      copy:
+        dest: /etc/apt/apt.conf.d/99-pve-disable-nag
+        content: |
+          DPkg::Post-Invoke {
+              "which sed >/dev/null && test -f /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js && sed -i -E 's/res === null \|\| res === undefined \|\| \!res \|\| res\.data\.status\.toLowerCase\(\) \!== \x27active\x27/false/g; s/if \(res\.data\.status\.toLowerCase\(\) \!== \x27active\x27\)/if \(false\)/g' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js || true";
+          };
+        mode: '0644'
+
+    - name: 6. Apply Kernel Sysctl Performance Profile
+      copy:
+        dest: /etc/sysctl.d/99-pve-performance.conf
+        content: |
+          vm.swappiness = 10
+          vm.dirty_ratio = 10
+          vm.dirty_background_ratio = 5
+          fs.file-max = 2097152
+          net.core.somaxconn = 65535
+          net.ipv4.ip_forward = 1
+        mode: '0644'
+      notify: Reload sysctl
+
+    - name: 7. Configure CPU Performance Governor
+      copy:
+        dest: /etc/systemd/system/cpu-governor-performance.service
+        content: |
+          [Unit]
+          Description=Set CPU governor to performance for virtualization
+          After=sysinit.target local-fs.target
+          [Service]
+          Type=oneshot
+          ExecStart=/bin/sh -c 'for g in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do [ -f "$g" ] && echo performance > "$g" || true; done'
+          RemainAfterExit=yes
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: 8. Enable CPU Performance Governor Service
+      systemd:
+        name: cpu-governor-performance
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: 9. Verify Corosync Cluster Quorum
+      command: pvecm status
+      register: pvecm_out
+      changed_when: false
+      ignore_errors: true
+
+    - name: 10. Display Quorum Health Check
+      debug:
+        msg: "{{ pvecm_out.stdout_lines[:10] | default(['No corosync status']) }}"
+
+  handlers:
+    - name: Restart pveproxy
+      systemd:
+        name: pveproxy
+        state: restarted
+
+    - name: Reload sysctl
+      command: sysctl --system
