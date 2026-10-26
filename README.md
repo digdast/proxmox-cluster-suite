@@ -63,3 +63,16 @@ You can also copy and run `optimize_node.sh` directly on any node:
 scp C:\scripts\proxmox_cluster_suite\optimize_node.sh root@192.168.0.30:/tmp/
 ssh root@192.168.0.30 "chmod +x /tmp/optimize_node.sh && /tmp/optimize_node.sh"
 ```
+
+## Kubernetes HA Cluster & Workloads
+Automated provisioning, storage, and orchestration scripts for the 6-node K3s cluster:
+- `kubernetes/deploy_k8s_cluster.py`: Deploy 2 Control Planes & 4 Workers with embedded etcd HA.
+- `kubernetes/deploy_portainer_k8s.py`: Deploy Portainer CE connected to in-cluster Kubernetes API.
+- `kubernetes/configure_nfs_all_nodes.py`: Mount Unraid NFS storage (`/mnt/user/data`) across all nodes.
+- `kubernetes/add_ssh_keys_to_cluster.py`: Inject SSH keys into root and plexadmin on all nodes.
+- `kubernetes/deploy_media_stack.py`: Deploy Sonarr, Radarr, and Prowlarr with persistent NFS storage.
+- `kubernetes/deploy_plex.py`: Deploy Plex Media Server with persistent library mounts.
+- `kubernetes/deploy_full_pihole_cluster.py`: Deploy 3-node Pi-hole v6 + Unbound + DoH cluster with Nebula-Sync.
+- `kubernetes/expand_all_cluster_disks.py`: Live online disk expansion (+40GB) across all 6 nodes.
+- `kubernetes/expand_all_cluster_ram.py`: RAM expansion (+2GB to 6GB) with hotplug support.
+- `kubernetes/sync_local_dns_from_pihole01.py`: Copy and sync all 49 local DNS records from pihole-01.
