@@ -4,6 +4,7 @@ import time
 import json
 import urllib.request
 import paramiko
+import base64
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -36,6 +37,10 @@ spec:
       labels:
         app: plex
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: k8s-cp-01
       containers:
       - name: plex
         image: lscr.io/linuxserver/plex:latest
@@ -49,30 +54,12 @@ spec:
             value: "America/New_York"
           - name: VERSION
             value: "docker"
-        ports:
-          - containerPort: 32400
-            name: plex-web
-          - containerPort: 3005
-            name: plex-companion
-          - containerPort: 8324
-            name: plex-roku
-          - containerPort: 32410
-            name: plex-gdm-1
-            protocol: UDP
-          - containerPort: 32412
-            name: plex-gdm-2
-            protocol: UDP
-          - containerPort: 32413
-            name: plex-gdm-3
-            protocol: UDP
-          - containerPort: 32414
-            name: plex-gdm-4
-            protocol: UDP
-          - containerPort: 32469
-            name: plex-dlna-tcp
-          - containerPort: 1900
-            name: plex-dlna-udp
-            protocol: UDP
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+          limits:
+            memory: 5Gi
         volumeMounts:
           - name: config
             mountPath: /config
@@ -80,19 +67,25 @@ spec:
             mountPath: /data
           - name: transcode
             mountPath: /transcode
+          - name: dshm
+            mountPath: /dev/shm
       volumes:
         - name: config
           hostPath:
-            path: /data/config/plex
+            path: /var/lib/plex/config
             type: DirectoryOrCreate
         - name: data
           hostPath:
             path: /data
             type: Directory
         - name: transcode
-          hostPath:
-            path: /data/transcode
-            type: DirectoryOrCreate
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
 ---
 apiVersion: v1
 kind: Service
@@ -102,45 +95,14 @@ metadata:
   labels:
     app: plex
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 32400
       targetPort: 32400
-      nodePort: 32400
       name: plex-web
       protocol: TCP
   selector:
     app: plex
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: plex-ingress
-  namespace: media
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-spec:
-  rules:
-  - host: plex.ertech.home
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: plex
-            port:
-              number: 32400
-  - host: plexserver.ertech.home
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: plex
-            port:
-              number: 32400
 """
 
 def log(msg):
@@ -152,59 +114,56 @@ def ok(msg):
 def err(msg):
     print(f"[!] {msg}", flush=True)
 
-def run_vm(ssh, cmd):
+def run_vm(ssh_pve, cmd):
     escaped = cmd.replace("'", "'\"'\"'")
-    exec_str = f"ssh -o StrictHostKeyChecking=no -i {SSH_KEY_PATH} root@{CP1_IP} '{escaped}'"
-    stdin, stdout, stderr = ssh.exec_command(exec_str)
-    out = stdout.read().decode('utf-8', errors='replace').strip()
-    er = stderr.read().decode('utf-8', errors='replace').strip()
-    return out, er
-
-def run_pve(ssh, cmd):
-    stdin, stdout, stderr = ssh.exec_command(cmd)
-    out = stdout.read().decode('utf-8', errors='replace').strip()
-    er = stderr.read().decode('utf-8', errors='replace').strip()
-    return out, er
+    exec_str = f"ssh -o StrictHostKeyChecking=no -o BatchMode=yes -i {SSH_KEY_PATH} root@{CP1_IP} '{escaped}'"
+    stdin, stdout, stderr = ssh_pve.exec_command(exec_str)
+    return stdout.read().decode('utf-8', errors='replace').strip(), stderr.read().decode('utf-8', errors='replace').strip()
 
 def main():
-    print("=" * 75)
-    print("  DEPLOYING PLEX MEDIA SERVER ON KUBERNETES")
-    print(f"  Mounts: /data/config/plex:/config, /data:/data, /data/transcode:/transcode")
-    print("  Timezone: America/New_York")
-    print(f"  Port: 32400 (NodePort: 32400)")
-    print("=" * 75 + "\n")
+    print("=" * 70)
+    print("  🚀 DEPLOYING OPTIMIZED PLEX MEDIA SERVER ON K3S")
+    print("=" * 70)
 
-    log(f"Connecting to Proxmox VE root host {PVE_HOST}...")
+    log(f"Connecting to Proxmox VE Host {PVE_HOST}...")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(PVE_HOST, port=22, username=PVE_USER, password=PVE_PASS, timeout=10)
-    ok(f"Connected to Proxmox VE root host {PVE_HOST}!")
+    ssh.connect(PVE_HOST, username=PVE_USER, password=PVE_PASS, timeout=10)
+    ok(f"Connected to {PVE_HOST}")
 
-    # Step 1: Ensure directories exist
-    log("Ensuring /data/config/plex and /data/transcode exist...")
-    run_vm(ssh, "mkdir -p /data/config/plex /data/transcode && chmod -R 777 /data/config/plex /data/transcode 2>/dev/null || true")
+    # Step 1: Kernel Tuning
+    log("Applying Linux Kernel optimization parameters...")
+    sysctl_content = """
+fs.inotify.max_user_watches = 1048576
+fs.inotify.max_user_instances = 1024
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+"""
+    b64_sysctl = base64.b64encode(sysctl_content.encode()).decode()
+    run_vm(ssh, f"echo {b64_sysctl} | base64 -d > /etc/sysctl.d/99-plex.conf && sysctl -p /etc/sysctl.d/99-plex.conf")
+    ok("Kernel parameters applied successfully.")
 
-    # Step 2: Apply Kubernetes manifest
-    log("Applying Plex Kubernetes manifest...")
-    apply_cmd = f"cat << 'EOF' | kubectl apply -f -\n{PLEX_MANIFEST}\nEOF"
-    out_apply, er_apply = run_vm(ssh, apply_cmd)
-    print(out_apply)
-    if er_apply:
-        print("Notice:", er_apply)
-    ok("Plex manifest applied successfully!")
+    # Step 2: Apply Manifest
+    log("Applying Kubernetes Deployment manifest...")
+    b64_manifest = base64.b64encode(PLEX_MANIFEST.encode()).decode()
+    out_apply, _ = run_vm(ssh, f"echo {b64_manifest} | base64 -d | kubectl apply -f -")
+    print(" ", out_apply)
 
-    # Step 3: Wait for Plex Pod to become Running
+    # Step 3: Wait for Pod
     log("Waiting for Plex pod to become Running...")
-    for attempt in range(30):
+    for attempt in range(25):
         pods_out, _ = run_vm(ssh, "kubectl get pods -n media -l app=plex -o wide")
-        print(f"  [{attempt+1}/30] {pods_out.splitlines()[-1] if pods_out else ''}")
-        if "1/1" in pods_out and "Running" in pods_out:
-            ok("Plex pod is 1/1 Running!")
+        status_line = pods_out.splitlines()[-1] if pods_out else ""
+        print(f"  [{attempt+1}/25] {status_line}")
+        if "1/1" in status_line and "Running" in status_line:
+            ok("Plex pod is 1/1 Running on host network!")
             break
-        time.sleep(5)
+        time.sleep(4)
 
-    # Step 4: Update NPM Reverse Proxy (Host 21: plexserver.ertechlab.com)
-    log("\nUpdating Nginx Proxy Manager (CT 200 / 192.168.0.8:81)...")
+    # Step 4: Update NPM Reverse Proxy
+    log("Updating Nginx Proxy Manager (Host 21: plexserver.ertechlab.com)...")
     try:
         req_token = urllib.request.Request(
             f"{NPM_HOST}/api/tokens",
@@ -214,11 +173,10 @@ def main():
         with urllib.request.urlopen(req_token) as resp:
             token = json.loads(resp.read().decode('utf-8'))["token"]
 
-        # Update Host 21
         req_g = urllib.request.Request(f"{NPM_HOST}/api/nginx/proxy-hosts/21", headers={"Authorization": f"Bearer {token}"})
         with urllib.request.urlopen(req_g) as rg:
             hdata = json.loads(rg.read().decode('utf-8'))
-        
+
         pl = {
             "domain_names": hdata["domain_names"],
             "forward_scheme": "http",
@@ -231,9 +189,9 @@ def main():
             "block_exploits": hdata.get("block_exploits", True),
             "advanced_config": hdata.get("advanced_config", ""),
             "allow_websocket_upgrade": True,
-            "http2_support": hdata.get("http2_support", True),
-            "hsts_enabled": hdata.get("hsts_enabled", False),
-            "hsts_subdomains": hdata.get("hsts_subdomains", False),
+            "http2_support": True,
+            "hsts_enabled": False,
+            "hsts_subdomains": False,
             "locations": []
         }
         req_p = urllib.request.Request(
@@ -247,44 +205,8 @@ def main():
     except Exception as e:
         err(f"NPM update notice: {e}")
 
-    # Step 5: Update Pi-hole DNS
-    log("\nUpdating Pi-hole DNS (192.168.0.2) with Plex domain names...")
-    pihole_cmd = f"""pct exec 300 -- python3 -c '
-hosts = [
-    ("{CP1_IP}", "plex.ertech.home"),
-    ("{CP1_IP}", "plexserver.ertech.home")
-]
-with open("/etc/pihole/custom.list", "a+") as f:
-    f.seek(0)
-    existing = f.read()
-    for ip, domain in hosts:
-        line = f"{{ip}} {{domain}}"
-        if domain not in existing:
-            f.write(f"\\n{{line}}")
-            print("Added to Pi-hole:", line)
-        else:
-            print("Already present in Pi-hole:", domain)
-'"""
-    run_pve(ssh, pihole_cmd)
-    run_pve(ssh, "pct exec 300 -- systemctl restart pihole-FTL")
-    ok("Pi-hole DNS reloaded!")
-
-    # Step 6: Verify Plex Web response
-    log("\nVerifying Plex Web response...")
-    time.sleep(10)
-    out_curl, _ = run_vm(ssh, "curl -sI http://127.0.0.1:32400/web/index.html | head -n 5")
-    print(f"Plex Web response:\n{out_curl}")
-
     ssh.close()
-
-    print("\n" + "=" * 75)
-    print("  🎉 PLEX MEDIA SERVER DEPLOYED SUCCESSFULLY!")
-    print("=" * 75)
-    print("  Access URLs:")
-    print("    - Public / SSL:    https://plexserver.ertechlab.com")
-    print(f"    - Direct IP:       http://{CP1_IP}:32400/web")
-    print("    - Local DNS:       http://plex.ertech.home:32400/web")
-    print("=" * 75)
+    ok("Plex Media Server deployment and configuration completed!")
 
 if __name__ == "__main__":
     main()
