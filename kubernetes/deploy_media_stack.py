@@ -41,7 +41,8 @@ spec:
     metadata:
       labels:
         app: sonarr
-    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: worker
       containers:
       - name: sonarr
         image: lscr.io/linuxserver/sonarr:latest
@@ -53,14 +54,31 @@ spec:
             value: "1000"
           - name: TZ
             value: "America/New_York"
+          - name: DOTNET_gcServer
+            value: "1"
+          - name: DOTNET_TieredPGO
+            value: "1"
+          - name: DOTNET_TC_QuickJitForLoops
+            value: "1"
+          - name: DOTNET_ReadyToRun
+            value: "1"
         ports:
           - containerPort: 8989
             name: http
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: "4"
+            memory: 4Gi
         volumeMounts:
           - name: config
             mountPath: /config
           - name: data
             mountPath: /data
+          - name: tmpfs
+            mountPath: /tmp
       volumes:
         - name: config
           hostPath:
@@ -70,6 +88,10 @@ spec:
           hostPath:
             path: /data
             type: Directory
+        - name: tmpfs
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -108,6 +130,8 @@ spec:
       labels:
         app: radarr
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: worker
       containers:
       - name: radarr
         image: lscr.io/linuxserver/radarr:latest
@@ -119,14 +143,31 @@ spec:
             value: "1000"
           - name: TZ
             value: "America/New_York"
+          - name: DOTNET_gcServer
+            value: "1"
+          - name: DOTNET_TieredPGO
+            value: "1"
+          - name: DOTNET_TC_QuickJitForLoops
+            value: "1"
+          - name: DOTNET_ReadyToRun
+            value: "1"
         ports:
           - containerPort: 7878
             name: http
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: "4"
+            memory: 4Gi
         volumeMounts:
           - name: config
             mountPath: /config
           - name: data
             mountPath: /data
+          - name: tmpfs
+            mountPath: /tmp
       volumes:
         - name: config
           hostPath:
@@ -136,6 +177,10 @@ spec:
           hostPath:
             path: /data
             type: Directory
+        - name: tmpfs
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -174,6 +219,8 @@ spec:
       labels:
         app: prowlarr
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: worker
       containers:
       - name: prowlarr
         image: lscr.io/linuxserver/prowlarr:latest
@@ -185,14 +232,31 @@ spec:
             value: "1000"
           - name: TZ
             value: "America/New_York"
+          - name: DOTNET_gcServer
+            value: "1"
+          - name: DOTNET_TieredPGO
+            value: "1"
+          - name: DOTNET_TC_QuickJitForLoops
+            value: "1"
+          - name: DOTNET_ReadyToRun
+            value: "1"
         ports:
           - containerPort: 9696
             name: http
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: "4"
+            memory: 4Gi
         volumeMounts:
           - name: config
             mountPath: /config
           - name: data
             mountPath: /data
+          - name: tmpfs
+            mountPath: /tmp
       volumes:
         - name: config
           hostPath:
@@ -202,6 +266,10 @@ spec:
           hostPath:
             path: /data
             type: Directory
+        - name: tmpfs
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
 ---
 apiVersion: v1
 kind: Service
