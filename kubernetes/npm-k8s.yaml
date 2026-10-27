@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: npm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflared-token
+  namespace: npm
+type: Opaque
+stringData:
+  token: "eyJhIjoiZGFhYjA2NDMwYWFhNzBmODg2NDE1YjU0NDc3NGIwYmMiLCJ0IjoiMmY1ZTIwNDItOTkxMy00MzljLThkZjItYmI4MzEyY2UwMjJjIiwicyI6IllqZ3dZelE0WldNdE1qWTFOaTAwWXpoaExUbG1ObU10T1RBMVptVXdOVFZpWW1ZdyJ9"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy-manager
+  namespace: npm
+  labels:
+    app: npm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: npm
+  template:
+    metadata:
+      labels:
+        app: npm
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-cp-01
+      containers:
+      - name: npm
+        image: jc21/nginx-proxy-manager:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DISABLE_IPV6
+          value: "true"
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=2048"
+        ports:
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+        - name: admin
+          containerPort: 81
+        volumeMounts:
+        - name: npm-data
+          mountPath: /data
+        - name: npm-letsencrypt
+          mountPath: /etc/letsencrypt
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: 4000m
+            memory: 6Gi
+      - name: cloudflared
+        image: cloudflare/cloudflared:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - tunnel
+        - --no-autoupdate
+        - run
+        - --token
+        - eyJhIjoiZGFhYjA2NDMwYWFhNzBmODg2NDE1YjU0NDc3NGIwYmMiLCJ0IjoiMmY1ZTIwNDItOTkxMy00MzljLThkZjItYmI4MzEyY2UwMjJjIiwicyI6IllqZ3dZelE0WldNdE1qWTFOaTAwWXpoaExUbG1ObU10T1RBMVptVXdOVFZpWW1ZdyJ9
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+      volumes:
+      - name: npm-data
+        hostPath:
+          path: /var/lib/npm/data
+          type: Directory
+      - name: npm-letsencrypt
+        hostPath:
+          path: /var/lib/npm/letsencrypt
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: npm-service
+  namespace: npm
+  labels:
+    app: npm
+spec:
+  type: LoadBalancer
+  selector:
+    app: npm
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 443
+    protocol: TCP
+  - name: admin
+    port: 81
+    targetPort: 81
+    protocol: TCP

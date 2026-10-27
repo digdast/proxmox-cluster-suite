@@ -197,11 +197,11 @@ records_to_sync = [
     ("192.168.0.51", "checkmk.ertech.home"),
     ("192.168.0.51", "checkmk"),
 
-    # CT 504: reconya-01
-    ("192.168.0.54", "reconya-01.ertech.home"),
-    ("192.168.0.54", "reconya-01"),
-    ("192.168.0.54", "reconya.ertech.home"),
-    ("192.168.0.54", "reconya"),
+    # Reconya (K3s cluster - namespace: reconya)
+    ("192.168.0.8", "reconya-01.ertech.home"),
+    ("192.168.0.8", "reconya-01"),
+    ("192.168.0.8", "reconya.ertech.home"),
+    ("192.168.0.8", "reconya"),
 
     # CT 700: sonarr-01
     ("192.168.0.70", "sonarr-01.ertech.home"),

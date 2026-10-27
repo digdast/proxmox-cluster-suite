@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: reconya
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: reconya-config
+  namespace: reconya
+data:
+  PORT: "3008"
+  LOGIN_USERNAME: "admin"
+  LOGIN_PASSWORD: "sone_420"
+  DATABASE_NAME: "reconya"
+  SQLITE_PATH: "/opt/reconya_data/reconya.db"
+  PUBLIC_IP_LOOKUP_ENABLED: "false"
+  GEOLOCATION_ENABLED: "false"
+  VENDOR_LOOKUP_ONLINE_ENABLED: "false"
+  OUI_DOWNLOAD_ENABLED: "false"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reconya
+  namespace: reconya
+  labels:
+    app: reconya
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: reconya
+  template:
+    metadata:
+      labels:
+        app: reconya
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        node-role.kubernetes.io/worker: worker
+      containers:
+      - name: reconya
+        image: debian:bookworm-slim
+        command: ["/bin/bash", "/opt/reconya/entrypoint.sh"]
+        workingDir: /opt/reconya_data
+        envFrom:
+        - configMapRef:
+            name: reconya-config
+        ports:
+        - containerPort: 3008
+          name: http
+          protocol: TCP
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1024Mi
+        volumeMounts:
+        - name: reconya-bin
+          mountPath: /opt/reconya
+        - name: reconya-data
+          mountPath: /opt/reconya_data
+      volumes:
+      - name: reconya-bin
+        hostPath:
+          path: /data/appdata/reconya/reconya
+          type: Directory
+      - name: reconya-data
+        hostPath:
+          path: /data/appdata/reconya/reconya_data
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reconya-service
+  namespace: reconya
+  labels:
+    app: reconya
+spec:
+  type: ClusterIP
+  selector:
+    app: reconya
+  ports:
+  - name: http
+    port: 3008
+    targetPort: 3008
+    protocol: TCP
