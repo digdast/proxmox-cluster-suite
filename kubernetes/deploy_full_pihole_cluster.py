@@ -94,11 +94,13 @@ spec:
           - name: FTLCONF_webserver_api_password
             value: "{PIHOLE_PW}"
           - name: FTLCONF_dns_upstreams
-            value: "127.0.0.1#5335"
+            value: "127.0.0.1#5053"
           - name: FTLCONF_dns_listeningMode
             value: "ALL"
+          - name: FTLCONF_dns_rateLimit_count
+            value: "0"
           - name: DNSSEC
-            value: "true"
+            value: "false"
           - name: FTLCONF_LOCAL_IPV4
             value: "0.0.0.0"
         ports:
@@ -212,11 +214,13 @@ spec:
           - name: FTLCONF_webserver_api_password
             value: "{PIHOLE_PW}"
           - name: FTLCONF_dns_upstreams
-            value: "127.0.0.1#5335"
+            value: "127.0.0.1#5053"
           - name: FTLCONF_dns_listeningMode
             value: "ALL"
+          - name: FTLCONF_dns_rateLimit_count
+            value: "0"
           - name: DNSSEC
-            value: "true"
+            value: "false"
           - name: FTLCONF_LOCAL_IPV4
             value: "0.0.0.0"
         ports:
@@ -330,11 +334,13 @@ spec:
           - name: FTLCONF_webserver_api_password
             value: "{PIHOLE_PW}"
           - name: FTLCONF_dns_upstreams
-            value: "127.0.0.1#5335"
+            value: "127.0.0.1#5053"
           - name: FTLCONF_dns_listeningMode
             value: "ALL"
+          - name: FTLCONF_dns_rateLimit_count
+            value: "0"
           - name: DNSSEC
-            value: "true"
+            value: "false"
           - name: FTLCONF_LOCAL_IPV4
             value: "0.0.0.0"
         ports:
@@ -464,9 +470,9 @@ spec:
           - name: FULL_SYNC
             value: "true"
           - name: RUN_GRAVITY
-            value: "true"
+            value: "false"
           - name: CRON
-            value: "*/5 * * * *"
+            value: "0 */6 * * *"
 ---
 # --- INGRESS FOR PIHOLE WEB INTERFACES ---
 apiVersion: networking.k8s.io/v1
