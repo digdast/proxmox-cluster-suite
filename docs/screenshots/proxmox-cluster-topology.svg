@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d"/>
+      <stop offset="50%" stop-color="#0e172a"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="pveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="k3sGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="nasGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="680" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Grid Lines -->
+  <g stroke="rgba(255,255,255,0.03)" stroke-width="1">
+    <line x1="0" y1="170" x2="1200" y2="170" />
+    <line x1="0" y1="340" x2="1200" y2="340" />
+    <line x1="0" y1="510" x2="1200" y2="510" />
+    <line x1="300" y1="0" x2="300" y2="680" />
+    <line x1="600" y1="0" x2="600" y2="680" />
+    <line x1="900" y1="0" x2="900" y2="680" />
+  </g>
+
+  <!-- Title Banner -->
+  <text x="600" y="55" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#f8fafc">⚡ Proxmox VE 5-Node Enterprise Cluster Suite</text>
+  <text x="600" y="85" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#94a3b8">HA Virtualization • Automated Cloud-Init • High-IOPS NVMe • K3s Multi-Node Fabric</text>
+
+  <!-- PVE Nodes Section -->
+  <rect x="50" y="120" width="1100" height="230" rx="16" fill="rgba(15,23,42,0.6)" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+  <rect x="70" y="105" width="260" height="30" rx="6" fill="url(#pveGrad)"/>
+  <text x="200" y="125" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">🖥️ PROXMOX VE CLUSTER (pve-00 → pve-04)</text>
+
+  <!-- Node Cards -->
+  <!-- pve-00 -->
+  <g transform="translate(70, 155)">
+    <rect width="195" height="170" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1"/>
+    <rect width="195" height="6" rx="3" fill="#ea580c"/>
+    <text x="97" y="32" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#f8fafc">pve-00</text>
+    <text x="97" y="52" text-anchor="middle" font-family="monospace" font-size="12" fill="#38bdf8">192.168.0.30</text>
+    <text x="97" y="75" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Master / Quorum Lead</text>
+    <text x="97" y="98" text-anchor="middle" font-family="monospace" font-size="10.5" fill="#94a3b8">Port: 8006 (SSL GUI)</text>
+    <text x="97" y="118" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#10b981">✓ Governor: Performance</text>
+    <text x="97" y="138" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#a855f7">✓ ZFS ARC Capped</text>
+    <text x="97" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Ballooning: 0 (Direct)</text>
+  </g>
+
+  <!-- pve-01 -->
+  <g transform="translate(285, 155)">
+    <rect width="195" height="170" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1"/>
+    <rect width="195" height="6" rx="3" fill="#ea580c"/>
+    <text x="97" y="32" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#f8fafc">pve-01</text>
+    <text x="97" y="52" text-anchor="middle" font-family="monospace" font-size="12" fill="#38bdf8">192.168.0.31</text>
+    <text x="97" y="75" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Compute Worker 1</text>
+    <text x="97" y="98" text-anchor="middle" font-family="monospace" font-size="10.5" fill="#94a3b8">Port: 8006 (SSL GUI)</text>
+    <text x="97" y="118" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#10b981">✓ Governor: Performance</text>
+    <text x="97" y="138" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#a855f7">✓ ZFS ARC Capped</text>
+    <text x="97" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Ballooning: 0 (Direct)</text>
+  </g>
+
+  <!-- pve-02 -->
+  <g transform="translate(500, 155)">
+    <rect width="195" height="170" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1"/>
+    <rect width="195" height="6" rx="3" fill="#ea580c"/>
+    <text x="97" y="32" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#f8fafc">pve-02</text>
+    <text x="97" y="52" text-anchor="middle" font-family="monospace" font-size="12" fill="#38bdf8">192.168.0.32</text>
+    <text x="97" y="75" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Compute Worker 2</text>
+    <text x="97" y="98" text-anchor="middle" font-family="monospace" font-size="10.5" fill="#94a3b8">Port: 8006 (SSL GUI)</text>
+    <text x="97" y="118" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#10b981">✓ Governor: Performance</text>
+    <text x="97" y="138" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#a855f7">✓ ZFS ARC Capped</text>
+    <text x="97" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Ballooning: 0 (Direct)</text>
+  </g>
+
+  <!-- pve-03 -->
+  <g transform="translate(715, 155)">
+    <rect width="195" height="170" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1"/>
+    <rect width="195" height="6" rx="3" fill="#ea580c"/>
+    <text x="97" y="32" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#f8fafc">pve-03</text>
+    <text x="97" y="52" text-anchor="middle" font-family="monospace" font-size="12" fill="#38bdf8">192.168.0.33</text>
+    <text x="97" y="75" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Compute Worker 3</text>
+    <text x="97" y="98" text-anchor="middle" font-family="monospace" font-size="10.5" fill="#94a3b8">Port: 8006 (SSL GUI)</text>
+    <text x="97" y="118" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#10b981">✓ Governor: Performance</text>
+    <text x="97" y="138" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#a855f7">✓ ZFS ARC Capped</text>
+    <text x="97" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Ballooning: 0 (Direct)</text>
+  </g>
+
+  <!-- pve-04 -->
+  <g transform="translate(930, 155)">
+    <rect width="195" height="170" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1"/>
+    <rect width="195" height="6" rx="3" fill="#ea580c"/>
+    <text x="97" y="32" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#f8fafc">pve-04</text>
+    <text x="97" y="52" text-anchor="middle" font-family="monospace" font-size="12" fill="#38bdf8">192.168.0.34</text>
+    <text x="97" y="75" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Compute Worker 4</text>
+    <text x="97" y="98" text-anchor="middle" font-family="monospace" font-size="10.5" fill="#94a3b8">Port: 8006 (SSL GUI)</text>
+    <text x="97" y="118" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#10b981">✓ Governor: Performance</text>
+    <text x="97" y="138" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#a855f7">✓ ZFS ARC Capped</text>
+    <text x="97" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#64748b">Ballooning: 0 (Direct)</text>
+  </g>
+
+  <!-- Lower Section: K3s + NAS Storage -->
+  <!-- K3s Cluster Box -->
+  <rect x="50" y="390" width="750" height="240" rx="16" fill="rgba(15,23,42,0.6)" stroke="rgba(56,189,248,0.3)" stroke-width="1.5"/>
+  <rect x="70" y="375" width="280" height="30" rx="6" fill="url(#k3sGrad)"/>
+  <text x="210" y="395" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">☸️ K3S KUBERNETES FABRIC (192.168.0.81 - 87)</text>
+
+  <g transform="translate(70, 420)">
+    <!-- Master CP01 -->
+    <rect width="215" height="185" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="107" y="28" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#38bdf8">k3s-cp01</text>
+    <text x="107" y="46" text-anchor="middle" font-family="monospace" font-size="11.5" fill="#94a3b8">192.168.0.81</text>
+    <text x="107" y="70" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Control Plane 1 (etcd)</text>
+    <text x="107" y="96" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">📎 Paperclip: :30791</text>
+    <text x="107" y="116" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">🪽 Hermes-01: :30792</text>
+    <text x="107" y="136" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">⚡ n8n Workflows: :30678</text>
+    <text x="107" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">📊 Checkmk: :30500</text>
+    <text x="107" y="174" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#10b981">✓ Embedded etcd HA</text>
+  </g>
+
+  <g transform="translate(315, 420)">
+    <!-- Master CP02 -->
+    <rect width="215" height="185" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="107" y="28" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#38bdf8">k3s-cp02</text>
+    <text x="107" y="46" text-anchor="middle" font-family="monospace" font-size="11.5" fill="#94a3b8">192.168.0.82</text>
+    <text x="107" y="70" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Control Plane 2 (etcd)</text>
+    <text x="107" y="96" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">🛡️ AegisDNS Pi-hole 1</text>
+    <text x="107" y="116" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">🔐 Authentik: :30090</text>
+    <text x="107" y="136" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">🌐 NPM Ingress: :30132</text>
+    <text x="107" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">🖨️ PrintForge: :30099</text>
+    <text x="107" y="174" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#10b981">✓ Embedded etcd HA</text>
+  </g>
+
+  <g transform="translate(560, 420)">
+    <!-- Workers Cluster -->
+    <rect width="215" height="185" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="107" y="28" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#38bdf8">k3s-wk01 → wk05</text>
+    <text x="107" y="46" text-anchor="middle" font-family="monospace" font-size="11.5" fill="#94a3b8">192.168.0.83 - 87</text>
+    <text x="107" y="70" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#cbd5e1">Dedicated Compute Workers</text>
+    <text x="107" y="96" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">🎬 Plex Server: :32400</text>
+    <text x="107" y="116" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">⚡ Pulsearr / Sonarr: :32093</text>
+    <text x="107" y="136" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">📥 qBittorrent: :31888</text>
+    <text x="107" y="156" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#94a3b8">⛵ Portainer: :30777</text>
+    <text x="107" y="174" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#10b981">✓ Flannel VXLAN Network</text>
+  </g>
+
+  <!-- unRAID Storage Box -->
+  <rect x="830" y="390" width="320" height="240" rx="16" fill="rgba(15,23,42,0.6)" stroke="rgba(16,185,129,0.3)" stroke-width="1.5"/>
+  <rect x="850" y="375" width="240" height="30" rx="6" fill="url(#nasGrad)"/>
+  <text x="970" y="395" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">🗄️ UNRAID STORAGE POOL</text>
+
+  <g transform="translate(850, 420)">
+    <rect width="280" height="185" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="140" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#34d399">unRAID NAS Server</text>
+    <text x="140" y="48" text-anchor="middle" font-family="monospace" font-size="12" fill="#38bdf8">192.168.0.3</text>
+    <text x="140" y="74" text-anchor="middle" font-family="sans-serif" font-size="11.5" fill="#cbd5e1">NFS / SMB Shared Storage Pool</text>
+    
+    <text x="20" y="105" font-family="monospace" font-size="11" fill="#94a3b8">• /mnt/user/data/backups</text>
+    <text x="20" y="125" font-family="monospace" font-size="11" fill="#94a3b8">• /mnt/user/data/media</text>
+    <text x="20" y="145" font-family="monospace" font-size="11" fill="#94a3b8">• /mnt/user/data/appdata</text>
+    <text x="140" y="174" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#10b981">✓ Daily vzdump zstd snapshots</text>
+  </g>
+
+</svg>

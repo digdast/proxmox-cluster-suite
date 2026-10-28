@@ -1,23 +1,42 @@
+<div align="center">
+
 # ⚡ Proxmox VE 5-Node Enterprise Cluster Suite
 
-Comprehensive optimization, high-availability tuning, automated backup, and orchestration suite tailored for the **5-Node Proxmox VE Cluster** (`pve-00` to `pve-04` at `192.168.0.30 - 192.168.0.34`) and network storage (`192.168.0.3` unRAID / NAS).
+### High-Availability Proxmox Virtualization, Automated Cloud-Init Provisioning, Kernel Tuning & 6-Node K3s Cluster Fabric
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Proxmox%20VE-8.x-E57000?style=for-the-badge&logo=proxmox&logoColor=white" />
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Ansible-Automation-EE0000?style=for-the-badge&logo=ansible&logoColor=white" />
+  <img src="https://img.shields.io/badge/Terraform-IaC-844FBA?style=for-the-badge&logo=terraform&logoColor=white" />
+  <img src="https://img.shields.io/badge/K3s-Kubernetes%20Fabric-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" />
+</p>
+
+</div>
 
 ---
 
-## 🖥️ Cluster Topology
+## 📸 Cluster Architecture & Network Topology
 
-| Node Name | IP Address | PVE Web GUI | Role |
-| :--- | :--- | :--- | :--- |
-| **`pve-00`** | `192.168.0.30` | [https://192.168.0.30:8006](https://192.168.0.30:8006) | Master / Primary Node |
-| **`pve-01`** | `192.168.0.31` | [https://192.168.0.31:8006](https://192.168.0.31:8006) | Node 1 / Compute Worker |
-| **`pve-02`** | `192.168.0.32` | [https://192.168.0.32:8006](https://192.168.0.32:8006) | Node 2 / Compute Worker |
-| **`pve-03`** | `192.168.0.33` | [https://192.168.0.33:8006](https://192.168.0.33:8006) | Node 3 / Compute Worker |
-| **`pve-04`** | `192.168.0.34` | [https://192.168.0.34:8006](https://192.168.0.34:8006) | Node 4 / Compute Worker |
-| **`unRAID`** | `192.168.0.3` | [//192.168.0.3/data](file:///192.168.0.3/data) | Shared NFS Backups & Media Pool |
+![Proxmox Cluster Topology](docs/screenshots/proxmox-cluster-topology.svg)
 
 ---
 
-## 🚀 Key Modules Included
+## 🖥️ Cluster Hardware & Hypervisor Map
+
+| Node | IP Address | PVE Web GUI | Role | Specs & Tuning |
+| :--- | :--- | :--- | :--- | :--- |
+| **`pve-00`** | `192.168.0.30` | [https://192.168.0.30:8006](https://192.168.0.30:8006) | Master / Quorum Lead | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-01`** | `192.168.0.31` | [https://192.168.0.31:8006](https://192.168.0.31:8006) | Compute Worker 1 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-02`** | `192.168.0.32` | [https://192.168.0.32:8006](https://192.168.0.32:8006) | Compute Worker 2 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-03`** | `192.168.0.33` | [https://192.168.0.33:8006](https://192.168.0.33:8006) | Compute Worker 3 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-04`** | `192.168.0.34` | [https://192.168.0.34:8006](https://192.168.0.34:8006) | Compute Worker 4 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`unRAID`** | `192.168.0.3`  | [//192.168.0.3/data](file:///192.168.0.3/data) | Shared Storage NAS Pool | NFS Mounts: Backups, Media, AppData |
+
+---
+
+## 🚀 Key Orchestration Modules
 
 ### 1. Production Performance Tuning (`optimize_node.sh`)
 - **No-Subscription Repositories**: Disables enterprise repos and enables `pve-no-subscription`.
@@ -56,3 +75,24 @@ Automated provisioning, storage, DNS, and orchestration scripts for the 6-node K
 ### 5. Interactive 1-Click Orchestrator & Web Dashboard
 - `orchestrator.py` & `run_suite.bat`: Multi-threaded Python dispatcher using Paramiko.
 - `web_dashboard.py` on port 7880: Real-time status cards, live pinging, and 1-click web console launcher.
+
+---
+
+## 🛠️ Usage
+
+### Run Orchestration Suite
+```powershell
+cd C:\scripts\proxmox_cluster_suite
+.\run_suite.bat
+```
+
+### Launch Web Dashboard
+```powershell
+.\run_dashboard.bat
+```
+Navigate to **http://localhost:7880** for real-time node monitoring.
+
+---
+
+## 📄 License
+MIT License. Created by ERTech Lab.
