@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Proxmox VE 5-Node Enterprise Cluster Orchestrator
-Automates performance tuning, nag removal, NFS storage, and K3s provisioning across 192.168.0.30-34.
+Automates performance tuning, nag removal, NFS storage, and K3s provisioning across 192.168.40.30-34.
 """
 import os
 import sys
@@ -14,11 +14,11 @@ import paramiko
 
 # Nodes mapping
 CLUSTER_NODES = [
-    {"name": "pve-00", "ip": "192.168.0.30"},
-    {"name": "pve-01", "ip": "192.168.0.31"},
-    {"name": "pve-02", "ip": "192.168.0.32"},
-    {"name": "pve-03", "ip": "192.168.0.33"},
-    {"name": "pve-04", "ip": "192.168.0.34"},
+    {"name": "pve-00", "ip": "192.168.40.30"},
+    {"name": "pve-01", "ip": "192.168.40.31"},
+    {"name": "pve-02", "ip": "192.168.40.32"},
+    {"name": "pve-03", "ip": "192.168.40.33"},
+    {"name": "pve-04", "ip": "192.168.40.34"},
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -39,7 +39,7 @@ def print_banner():
     banner = f"""
 {Colors.CYAN}{Colors.BOLD}========================================================================
    PROXMOX VE 5-NODE ENTERPRISE CLUSTER ORCHESTRATOR & TUNING SUITE
-   Cluster Nodes: pve-00 .. pve-04 | Range: 192.168.0.30 - 192.168.0.34
+   Cluster Nodes: pve-00 .. pve-04 | Range: 192.168.40.30 - 192.168.40.34
 ========================================================================{Colors.ENDC}
 """
     print(banner)

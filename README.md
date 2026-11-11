@@ -27,11 +27,11 @@
 
 | Node | IP Address | PVE Web GUI | Role | Specs & Tuning |
 | :--- | :--- | :--- | :--- | :--- |
-| **`pve-00`** | `192.168.0.30` | [https://192.168.0.30:8006](https://192.168.0.30:8006) | Master / Quorum Lead | Performance Gov • ZFS Capped • Balloon: 0 |
-| **`pve-01`** | `192.168.0.31` | [https://192.168.0.31:8006](https://192.168.0.31:8006) | Compute Worker 1 | Performance Gov • ZFS Capped • Balloon: 0 |
-| **`pve-02`** | `192.168.0.32` | [https://192.168.0.32:8006](https://192.168.0.32:8006) | Compute Worker 2 | Performance Gov • ZFS Capped • Balloon: 0 |
-| **`pve-03`** | `192.168.0.33` | [https://192.168.0.33:8006](https://192.168.0.33:8006) | Compute Worker 3 | Performance Gov • ZFS Capped • Balloon: 0 |
-| **`pve-04`** | `192.168.0.34` | [https://192.168.0.34:8006](https://192.168.0.34:8006) | Compute Worker 4 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-00`** | `192.168.40.30` | [https://192.168.40.30:8006](https://192.168.40.30:8006) | Master / Quorum Lead | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-01`** | `192.168.40.31` | [https://192.168.40.31:8006](https://192.168.40.31:8006) | Compute Worker 1 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-02`** | `192.168.40.32` | [https://192.168.40.32:8006](https://192.168.40.32:8006) | Compute Worker 2 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-03`** | `192.168.40.33` | [https://192.168.40.33:8006](https://192.168.40.33:8006) | Compute Worker 3 | Performance Gov • ZFS Capped • Balloon: 0 |
+| **`pve-04`** | `192.168.40.34` | [https://192.168.40.34:8006](https://192.168.40.34:8006) | Compute Worker 4 | Performance Gov • ZFS Capped • Balloon: 0 |
 | **`unRAID`** | `192.168.0.3`  | [//192.168.0.3/data](file:///192.168.0.3/data) | Shared Storage NAS Pool | NFS Mounts: Backups, Media, AppData |
 
 ---

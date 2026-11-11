@@ -8,7 +8,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect('192.168.0.30', username='root', password='sone_420')
+ssh.connect('192.168.40.30', username='root', password='sone_420')
 
 def r(cmd):
     stdin, stdout, stderr = ssh.exec_command(cmd)
@@ -55,15 +55,15 @@ print(f"Pi-hole 3 (192.168.0.83:30083): {get_hosts_count('192.168.0.83', 30083)}
 print("\n=== 3. DNS Resolution Verification on all 3 Pi-hole Resolvers ===")
 test_queries = [
     # Hypervisors
-    ("pve-00", "192.168.0.30"),
-    ("pve-00.ertech.home", "192.168.0.30"),
-    ("pve-01", "192.168.0.31"),
-    ("pve-02", "192.168.0.32"),
-    ("pve-03", "192.168.0.33"),
-    ("pve-04", "192.168.0.34"),
-    ("pve-cluster-01", "192.168.0.30"),
-    ("pve-cluster.ertech.home", "192.168.0.30"),
-    ("pve.ertech.home", "192.168.0.30"),
+    ("pve-00", "192.168.40.30"),
+    ("pve-00.ertech.home", "192.168.40.30"),
+    ("pve-01", "192.168.40.31"),
+    ("pve-02", "192.168.40.32"),
+    ("pve-03", "192.168.40.33"),
+    ("pve-04", "192.168.40.34"),
+    ("pve-cluster-01", "192.168.40.30"),
+    ("pve-cluster.ertech.home", "192.168.40.30"),
+    ("pve.ertech.home", "192.168.40.30"),
     ("pve-00-cluster", "192.168.0.130"),
     ("nas-01", "192.168.0.3"),
     ("router", "192.168.0.1"),

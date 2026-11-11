@@ -10,7 +10,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 LOCAL_SITE_DIR = r"C:\scripts\resume_ertechlab_deploy\site"
 LOCAL_TAR = r"C:\scripts\resume_site_bundle.tar.gz"
 
-PVE_HOST = "192.168.0.30"
+PVE_HOST = "192.168.40.30"
 PVE_USER = "root"
 PVE_PW = "sone_420"
 

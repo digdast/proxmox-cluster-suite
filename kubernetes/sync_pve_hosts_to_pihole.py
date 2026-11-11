@@ -68,26 +68,26 @@ def add_host(ip, domain, sid, base_url="http://192.168.0.81:30081"):
 # Define the complete desired PVE cluster hosts
 records_to_sync = [
     # 1. PVE Hypervisor Nodes (Management network vmbr0)
-    ("192.168.0.30", "pve-00.ertech.home"),
-    ("192.168.0.30", "pve-00"),
-    ("192.168.0.31", "pve-01.ertech.home"),
-    ("192.168.0.31", "pve-01"),
-    ("192.168.0.32", "pve-02.ertech.home"),
-    ("192.168.0.32", "pve-02"),
-    ("192.168.0.33", "pve-03.ertech.home"),
-    ("192.168.0.33", "pve-03"),
-    ("192.168.0.34", "pve-04.ertech.home"),
-    ("192.168.0.34", "pve-04"),
+    ("192.168.40.30", "pve-00.ertech.home"),
+    ("192.168.40.30", "pve-00"),
+    ("192.168.40.31", "pve-01.ertech.home"),
+    ("192.168.40.31", "pve-01"),
+    ("192.168.40.32", "pve-02.ertech.home"),
+    ("192.168.40.32", "pve-02"),
+    ("192.168.40.33", "pve-03.ertech.home"),
+    ("192.168.40.33", "pve-03"),
+    ("192.168.40.34", "pve-04.ertech.home"),
+    ("192.168.40.34", "pve-04"),
 
     # 2. PVE Cluster Hostnames & Aliases (Management network vmbr0)
-    ("192.168.0.30", "pve-cluster-01.ertech.home"),
-    ("192.168.0.30", "pve-cluster-01"),
-    ("192.168.0.30", "pve-clust-01.ertech.home"),
-    ("192.168.0.30", "pve-clust-01"),
-    ("192.168.0.30", "pve-cluster.ertech.home"),
-    ("192.168.0.30", "pve-cluster"),
-    ("192.168.0.30", "pve.ertech.home"),
-    ("192.168.0.30", "pve"),
+    ("192.168.40.30", "pve-cluster-01.ertech.home"),
+    ("192.168.40.30", "pve-cluster-01"),
+    ("192.168.40.30", "pve-clust-01.ertech.home"),
+    ("192.168.40.30", "pve-clust-01"),
+    ("192.168.40.30", "pve-cluster.ertech.home"),
+    ("192.168.40.30", "pve-cluster"),
+    ("192.168.40.30", "pve.ertech.home"),
+    ("192.168.40.30", "pve"),
 
     # 3. PVE Cluster Private / Storage Network (vmbr1)
     ("192.168.0.130", "pve-00-cluster.ertech.home"),
@@ -266,7 +266,7 @@ print(f"\nSync complete: {added_count} added, {exists_count} already existed, {e
 print("\nTriggering nebula-sync replication...")
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect('192.168.0.30', username='root', password='sone_420')
+ssh.connect('192.168.40.30', username='root', password='sone_420')
 
 def r(cmd):
     stdin, stdout, stderr = ssh.exec_command(cmd)

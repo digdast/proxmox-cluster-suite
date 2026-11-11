@@ -6,7 +6,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect('192.168.0.30', username='root', password='sone_420')
+ssh.connect('192.168.40.30', username='root', password='sone_420')
 
 def r(cmd):
     stdin, stdout, stderr = ssh.exec_command(cmd)

@@ -13,11 +13,11 @@ import uvicorn
 app = FastAPI(title="Proxmox Cluster Orchestrator")
 
 CLUSTER_NODES = [
-    {"name": "pve-00", "ip": "192.168.0.30", "role": "Master / Node 0"},
-    {"name": "pve-01", "ip": "192.168.0.31", "role": "Node 1"},
-    {"name": "pve-02", "ip": "192.168.0.32", "role": "Node 2"},
-    {"name": "pve-03", "ip": "192.168.0.33", "role": "Node 3"},
-    {"name": "pve-04", "ip": "192.168.0.34", "role": "Node 4"},
+    {"name": "pve-00", "ip": "192.168.40.30", "role": "Master / Node 0"},
+    {"name": "pve-01", "ip": "192.168.40.31", "role": "Node 1"},
+    {"name": "pve-02", "ip": "192.168.40.32", "role": "Node 2"},
+    {"name": "pve-03", "ip": "192.168.40.33", "role": "Node 3"},
+    {"name": "pve-04", "ip": "192.168.40.34", "role": "Node 4"},
 ]
 
 STORAGE_NODE = {"name": "unRAID Storage", "ip": "192.168.0.3", "role": "NFS Backup & Media Target"}
@@ -258,7 +258,7 @@ HTML_PAGE = """<!DOCTYPE html>
 <div class="header">
   <div class="title-group">
     <h1>⚡ Proxmox VE 5-Node Enterprise Cluster</h1>
-    <p>Target Range: 192.168.0.30 - 192.168.0.34 • Storage: 192.168.0.3 (unRAID)</p>
+    <p>Target Range: 192.168.40.30 - 192.168.40.34 • Storage: 192.168.0.3 (unRAID)</p>
   </div>
   <div class="badge-cluster" id="quorumBadge">● Corosync Quorum Active (5/5)</div>
 </div>

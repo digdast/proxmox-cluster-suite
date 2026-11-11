@@ -4,7 +4,7 @@ import time
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-PVE_HOST = "192.168.0.30"
+PVE_HOST = "192.168.40.30"
 PVE_USER = "root"
 PVE_PASS = "sone_420"
 K8S_IP = "192.168.0.81"

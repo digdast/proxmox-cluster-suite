@@ -8,7 +8,7 @@ import base64
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-PVE_HOST = "192.168.0.30"
+PVE_HOST = "192.168.40.30"
 PVE_USER = "root"
 PVE_PASS = "sone_420"
 SSH_KEY_PATH = "/root/.ssh/id_rsa"
